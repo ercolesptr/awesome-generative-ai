@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.Security.Credentials;
 using Windows.Security.Credentials.UI;
 using Windows.Storage.Streams;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace WindowsHello.Interop
 {
@@ -50,7 +51,7 @@ namespace WindowsHello.Interop
                 {
                     var userKey = keyCreationResult.Credential;
                     var publicKey = userKey.RetrievePublicKey();
-                    return CryptographicBuffer.EncodeToBase64String(publicKey);
+                    return Convert.ToBase64String(publicKey.ToArray());
                 }
                 return null;
             }).GetAwaiter().GetResult();
@@ -60,7 +61,9 @@ namespace WindowsHello.Interop
         {
             return Task.Run(async () =>
             {
-                IBuffer challengeBuffer = CryptographicBuffer.DecodeFromBase64String(challenge);
+                byte[] challengeBytes = Convert.FromBase64String(challenge);
+                IBuffer challengeBuffer = challengeBytes.AsBuffer();
+
                 var openKeyResult = await KeyCredentialManager.OpenAsync(accountId);
 
                 if (openKeyResult.Status == KeyCredentialStatus.Success)
@@ -70,7 +73,7 @@ namespace WindowsHello.Interop
 
                     if (signResult.Status == KeyCredentialStatus.Success)
                     {
-                        return CryptographicBuffer.EncodeToBase64String(signResult.Result);
+                        return Convert.ToBase64String(signResult.Result.ToArray());
                     }
                 }
                 return null;
