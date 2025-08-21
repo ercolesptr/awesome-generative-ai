@@ -1,48 +1,36 @@
 let lastMsg = [];
 let selectedVoice;
-let isEnabled = true; // Cached state
+let isEnabled = true;
 
-// Get initial enabled state and listen for changes
-chrome.storage.local.get({ isEnabled: true }, (data) => {
-  isEnabled = data.isEnabled;
-});
+const speechQueue = [];
+let isSpeaking = false;
 
-chrome.storage.onChanged.addListener((changes, namespace) => {
-  if (namespace === 'local' && changes.isEnabled) {
-    isEnabled = changes.isEnabled.newValue;
-    console.log('Netflix: Enabled state changed to:', isEnabled);
-    if (!isEnabled) {
-      // If disabled, stop any current speech
-      window.speechSynthesis.cancel();
-    }
+// --- Main function to process the speech queue ---
+function speakNext() {
+  if (isSpeaking || speechQueue.length === 0) {
+    return;
   }
-});
+  isSpeaking = true;
+  const utterance = speechQueue.shift();
 
-// Get voice from storage
-chrome.storage.local.get('voice', (data) => {
-  const voiceName = data.voice || '';
-
-  // This needs to be robust against voices loading late
-  const setVoice = () => {
-    let voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) {
-      if (voiceName) {
-        selectedVoice = voices.find((voice) => voice.name === voiceName);
-      } else {
-        selectedVoice = voices.find((voice) => voice.lang === 'en-US');
-      }
-      console.log('Netflix: Selected voice:', selectedVoice);
-    }
+  // When speech ends, set speaking flag to false and process next item
+  utterance.onend = () => {
+    isSpeaking = false;
+    speakNext();
   };
 
-  setVoice();
-  if (window.speechSynthesis.onvoiceschanged !== undefined) {
-    window.speechSynthesis.onvoiceschanged = setVoice;
-  }
-});
+  // If there's an error, also unlock the queue
+  utterance.onerror = (event) => {
+    console.error('An error occurred during speech synthesis:', event.error);
+    isSpeaking = false;
+    speakNext();
+  };
 
+  window.speechSynthesis.speak(utterance);
+}
+
+// --- Logic to handle subtitles found on the page ---
 function processSubtitle() {
-  // Only process if the extension is enabled
   if (!isEnabled) {
     return;
   }
@@ -55,9 +43,6 @@ function processSubtitle() {
     if (currentText == lastMsg) return;
     lastMsg = currentText;
 
-    // Cancel previous speech before starting new one for Netflix's rapid updates
-    window.speechSynthesis.cancel();
-
     let msg = new SpeechSynthesisUtterance(currentText.toLowerCase());
 
     if (selectedVoice) {
@@ -67,10 +52,47 @@ function processSubtitle() {
     msg.lang = 'en-US';
     msg.rate = 1;
 
-    window.speechSynthesis.speak(msg);
+    // Add the new subtitle to the queue and try to speak
+    speechQueue.push(msg);
+    speakNext();
   }
 }
 
+// --- Initialization and event listeners ---
+
+// Get initial enabled state and listen for changes
+chrome.storage.local.get({ isEnabled: true }, (data) => {
+  isEnabled = data.isEnabled;
+});
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes.isEnabled) {
+    isEnabled = changes.isEnabled.newValue;
+    if (!isEnabled) {
+      // If disabled, clear the queue and stop any current speech
+      speechQueue.length = 0;
+      window.speechSynthesis.cancel();
+    }
+  }
+});
+
+// Get voice from storage and set it
+chrome.storage.local.get('voice', (data) => {
+  const voiceName = data.voice || '';
+  const setVoice = () => {
+    let voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      selectedVoice = voices.find((voice) => voice.name === voiceName) || voices.find((voice) => voice.lang === 'en-US');
+      console.log('Netflix: Selected voice:', selectedVoice);
+    }
+  };
+  setVoice();
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = setVoice;
+  }
+});
+
+// Observer to detect subtitle changes
 const observer = new MutationObserver((mutations) => {
   processSubtitle();
 });
@@ -80,4 +102,4 @@ observer.observe(document.body, {
   subtree: true,
 });
 
-console.log('Netflix content script loaded.');
+console.log('Netflix content script with queuing loaded.');
