@@ -32,6 +32,7 @@ body {
     padding: 10px;
     border-radius: 8px;
     max-width: 80%;
+    white-space: pre-wrap;
 }
 
 .user-message {
