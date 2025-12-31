@@ -1,8 +1,42 @@
 const chatWindow = document.getElementById('chat-window');
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
+const modelInput = document.getElementById('model-input');
+const attachButton = document.getElementById('attach-button');
+const fileInput = document.getElementById('file-input');
+const fileNameSpan = document.getElementById('file-name');
 
 let conversationHistory = [];
+let attachedFile = null;
+
+attachButton.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            attachedFile = {
+                name: file.name,
+                type: file.type,
+                data: event.target.result,
+            };
+            fileNameSpan.textContent = file.name;
+        };
+
+        if (file.type.startsWith('image/')) {
+            reader.readAsDataURL(file);
+        } else if (file.type === 'text/plain') {
+            reader.readAsText(file);
+        } else {
+            // Handle other file types or show an error
+            fileNameSpan.textContent = "Unsupported file type.";
+            attachedFile = null;
+        }
+    }
+});
 
 chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -15,7 +49,22 @@ chatForm.addEventListener('submit', async (e) => {
     chatWindow.appendChild(messageElement);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 
-    conversationHistory.push({ role: 'user', content: userMessage });
+    const userMessageForHistory = {
+        role: 'user',
+        content: userMessage,
+    };
+
+    if (attachedFile) {
+        if (attachedFile.type.startsWith('image/')) {
+            userMessageForHistory.content = [
+                { type: 'text', text: userMessage },
+                { type: 'image_url', image_url: { url: attachedFile.data } },
+            ];
+        } else if (attachedFile.type === 'text/plain') {
+            userMessageForHistory.content = `Attached file "${attachedFile.name}":\n\n${attachedFile.data}\n\n---\n\n${userMessage}`;
+        }
+    }
+    conversationHistory.push(userMessageForHistory);
 
     chatInput.value = '';
 
@@ -26,7 +75,7 @@ chatForm.addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'default-model', // IMPORTANT: Replace with your model name
+                model: modelInput.value,
                 messages: conversationHistory,
                 stream: true,
             }),
@@ -74,6 +123,12 @@ chatForm.addEventListener('submit', async (e) => {
         if (assistantMessage) {
             conversationHistory.push({ role: 'assistant', content: assistantMessage });
         }
+
+    // Clear the attachment after sending the message
+    attachedFile = null;
+    fileNameSpan.textContent = '';
+    fileInput.value = '';
+
     } catch (error) {
         console.error('Error connecting to the server:', error);
         const errorElement = document.createElement('div');

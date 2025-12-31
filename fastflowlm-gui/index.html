@@ -10,7 +10,12 @@
     <div id="chat-container">
         <div id="chat-window"></div>
         <div id="model-container">
-            <input type="text" id="model-input" placeholder="Enter model name (e.g., llama3.2:1b)" value="default-model">
+            <input type="text" id="model-input" placeholder="Enter model name (e.g., llama3.2:1b)">
+        </div>
+        <div id="attachment-container">
+            <input type="file" id="file-input" style="display: none;" accept="image/*,text/plain">
+            <button type="button" id="attach-button">Attach File</button>
+            <span id="file-name"></span>
         </div>
         <form id="chat-form">
             <input type="text" id="chat-input" placeholder="Type your message...">

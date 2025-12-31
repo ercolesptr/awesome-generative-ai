@@ -9,8 +9,8 @@ body {
 }
 
 #chat-container {
-    width: 400px;
-    height: 600px;
+    width: 800px;
+    height: 90vh;
     border: 1px solid #ccc;
     border-radius: 8px;
     display: flex;
@@ -82,4 +82,26 @@ body {
     border-radius: 4px;
     font-size: 1em;
     box-sizing: border-box;
+}
+
+#attachment-container {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+}
+
+#attach-button {
+    border: none;
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#file-name {
+    font-size: 0.9em;
+    color: #666;
 }
