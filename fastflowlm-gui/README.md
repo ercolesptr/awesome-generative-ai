@@ -1,13 +1,13 @@
 # FastflowLM GUI
 
-This is a simple graphical user interface to interact with a local FastflowLM server, optimized for desktop use.
+This is a simple graphical user interface to interact with a local FastflowLM server, optimized for widescreen desktop use.
 
 ## Features
 
--   Desktop-friendly layout.
+-   Widescreen-friendly layout.
 -   Chat with your local FastflowLM models.
 -   Attach images and text files to your chat for multi-modal interactions.
--   Specify the model name directly in the UI.
+-   Select the model from a dropdown menu.
 
 ## Prerequisites
 
@@ -18,10 +18,12 @@ This is a simple graphical user interface to interact with a local FastflowLM se
 
 1.  **Start your FastflowLM server.** Make sure it is accessible at `http://localhost:11434`.
 
-2.  **Open the GUI in your browser.** Navigate to the `fastflowlm-gui` directory and open the `index.html` file directly in your web browser.
+2.  **Customize your model list (optional).** The model dropdown is populated from a hardcoded list in the `script.js` file. You can edit this list to add or remove your own models.
 
-3.  **Enter the model name** you are serving with FastflowLM into the "model name" input field.
+3.  **Open the GUI in your browser.** Navigate to the `fastflowlm-gui` directory and open the `index.html` file directly in your web browser.
 
-4.  (Optional) **Attach a file** by clicking the "Attach File" button before sending your message. You can attach images (`.png`, `.jpg`, etc.) or plain text files (`.txt`).
+4.  **Select a model** from the dropdown menu.
+
+5.  (Optional) **Attach a file** by clicking the "Attach File" button before sending your message. You can attach images (`.png`, `.jpg`, etc.) or plain text files (`.txt`).
 
 You can now start chatting with your FastflowLM model!

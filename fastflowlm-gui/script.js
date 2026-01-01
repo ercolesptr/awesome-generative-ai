@@ -1,13 +1,32 @@
 const chatWindow = document.getElementById('chat-window');
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
-const modelInput = document.getElementById('model-input');
+const modelSelect = document.getElementById('model-select');
 const attachButton = document.getElementById('attach-button');
 const fileInput = document.getElementById('file-input');
 const fileNameSpan = document.getElementById('file-name');
 
 let conversationHistory = [];
 let attachedFile = null;
+
+function populateModels() {
+    // Hardcoded list of models. Users can edit this array.
+    const models = [
+        "llama3.2:1b",
+        "gemma:2b",
+        "mistral:7b",
+        "qwen:4b"
+    ];
+
+    models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model;
+        option.textContent = model;
+        modelSelect.appendChild(option);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', populateModels);
 
 attachButton.addEventListener('click', () => {
     fileInput.click();
@@ -75,7 +94,7 @@ chatForm.addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: modelInput.value,
+                model: modelSelect.value,
                 messages: conversationHistory,
                 stream: true,
             }),

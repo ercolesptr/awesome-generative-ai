@@ -9,7 +9,7 @@ body {
 }
 
 #chat-container {
-    width: 800px;
+    width: 1000px;
     height: 90vh;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -72,17 +72,24 @@ body {
 }
 
 #model-container {
+    display: flex;
+    align-items: center;
     padding: 10px;
     border-top: 1px solid #ccc;
 }
 
-#model-input {
+#model-container label {
+    margin-right: 10px;
+}
+
+#model-select {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em;
     box-sizing: border-box;
+    background-color: white;
 }
 
 #attachment-container {
