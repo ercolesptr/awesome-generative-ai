@@ -1,0 +1,8 @@
+{
+  "templates": [
+    {
+      "name": "Template 1",
+      "path": "templates/template1.html"
+    }
+  ]
+}
