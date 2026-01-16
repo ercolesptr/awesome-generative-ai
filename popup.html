@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Subtitle Reader Settings</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 250px;
+      padding: 10px;
+    }
+    h1 {
+      font-size: 16px;
+      margin-top: 0;
+    }
+    .setting {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    #voices {
+      width: 100%;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 20px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body>
+  <h1>Subtitle Reader</h1>
+
+  <div class="setting">
+    <label for="enabled-switch">Enable Reading</label>
+    <label class="switch">
+      <input type="checkbox" id="enabled-switch">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <label for="voices">Select Voice</label>
+    <select id="voices"></select>
+  </div>
+
+  <button id="save">Save Voice</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>

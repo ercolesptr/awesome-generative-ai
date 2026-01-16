@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Subtitle Reader",
+  "version": "1.0",
+  "description": "Reads subtitles aloud on various streaming platforms.",
+  "permissions": [
+    "tts",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.netflix.com/*",
+    "*://*.primevideo.com/*",
+    "*://*.viki.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.netflix.com/*"],
+      "js": ["content_netflix.js"]
+    },
+    {
+      "matches": ["*://*.primevideo.com/*"],
+      "js": ["content_prime.js"]
+    },
+    {
+      "matches": ["*://*.viki.com/*"],
+      "js": ["content_viki.js"]
+    }
+  ]
+}
